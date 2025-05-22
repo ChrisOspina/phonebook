@@ -9,8 +9,6 @@ function App(props){
   const usersObj = [];
   const [users, setUsers] = useState(usersObj);
   const [searchQuery,setSearchQuery] =useState('')
-  const [notification, setNotification] = useState('');
-  const [notificationType, setNotificationType] = useState('');
 
   
   const addUser = (user) =>{

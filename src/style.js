@@ -29,6 +29,15 @@ const style={
       fontSize: "14px",
       borderRadius: "5px",
     },
+
+    deleteBtn:{
+      marginTop: "10px",
+      padding: "10px 15px",
+      border: "none",
+      backgroundColor: "lightseagreen",
+      fontSize: "14px",
+      borderRadius: "5px",
+    },
   },
 } 
 export default style
