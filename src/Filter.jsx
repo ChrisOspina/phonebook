@@ -1,10 +1,9 @@
-const Filter=({searchQuery,handleSearch})=>{
+const Filter=({searchQuery,handleSerach})=>{
   return (
-    <div className="filter-container">
+    <div>
         Filter shown with <input value={searchQuery} 
-        onChange={handleSearch}/>
+        onChange={handleSerach}/>
     </div>
   )
-} 
-
+}
 export default Filter
