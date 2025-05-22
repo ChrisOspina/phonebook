@@ -15,5 +15,9 @@ const deleteRec = (id) => {
     const request = axios.delete(`${baseUrl}/${id}`);
     return request.then(response => response.data);
 }
+const update = (id) =>{
+    const request = axios.post(`${baseUrl}/${id}`);
+    return request.then(response => response.data);
+}
 
 export default { getAll, create, update, deleteRec };

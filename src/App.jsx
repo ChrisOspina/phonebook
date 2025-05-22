@@ -2,8 +2,9 @@ import { useState, useEffect } from 'react'
 import Filter from './Filter';
 import Notification from './Notification';
 import Form from './Form';
-import noteService from './services/persons'
-import Persons from './services/persons';
+import Persons from './Persons';
+import noteService from './services/persons';
+import './styles.css';
 
 const App = () => {
 
@@ -101,7 +102,7 @@ const App = () => {
     )
 
     return(
-        <div>
+        <div className='container'>
             <h1>Phonebook</h1>
             <Notification message ={notification} type={notificationType}/>
             <Filter searchQuery={searchQuery} handleSearch={handleSearch}/>

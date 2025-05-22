@@ -1,8 +1,7 @@
 const Persons = ({personsToShow, deleteInfo}) =>{
-    
     return(
         <ul>
-            {personsToShow.Map(person =>(
+            {personsToShow.map(person =>(
                 <li key={person.id}>
                     {person.name} : {person.number}
                     <button onClick={(event)=> deleteInfo(event,person.id)}>delete</button>
