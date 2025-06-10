@@ -1,62 +1,145 @@
 import React, { useState } from "react";
-import Notification from "./Notification";
+import { toast } from 'react-toastify';
 import style from "../style";
 
-function PhoneBookForm(props){
+function PhoneBookForm({onAdd}){
 
-    const initContact ={
-        id: null,
-        userFirstname: "John",
-        userLastname: "Doe",
-        userPhone: "8885559999",
-    }
+    const [name, setName] = useState('');
+    const [email, setEmail] = useState('');
+    const [phone, setPhone] = useState('');
+    const [tags, setTags] = useState('');
+    const [profilePic, setProfilePic] = useState('');
+    const [profilePicPreview, setProfilePicPreview] = useState('');
 
-    const [userState, setUserState] = useState(initContact);
-    const [notification, setNotification] = useState('');
-    const [notificationType, setNotificationType] = useState('');
-
-    const handleUserChange = (e) =>{
-        setUserState({
-        ...userState,
-        [e.target.name]: e.target.value,
-        });
-    };
-
-    const handleSubmit = (e) =>{
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        if (!userState.userFirstname || !userState.userLastname || !userState.userPhone) 
-            return;
-        props.addUser(userState);
-        setUserState(initContact);
-        showNotification(`Added ${userState.userFirstname} ${userState.userLastname}`);
-    }
 
-      
-  const showNotification = (message, type = 'success') => {
-    setNotification(message);
-    setNotificationType(type);
-    setTimeout(() => setNotification(''), 3000);
-  };
+        //Check phone is digits only
+        const phoneDigits = phone.replace(/\D/g, '');
+        if (phoneDigits.length < 9) {
+            toast.info('Phone number must be at least 9 digits');
+            return;
+        }
+
+    const newContact = { name, email, phone, tags, profilePic };
+
+    try
+    {
+        const res = await fetch('http://localhost:3001/contacts', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(newContact)
+        });
+
+        if(res.ok){
+            setName('');
+                setEmail('');
+                setPhone('');
+                setTags('');
+                setProfilePic('');
+                setProfilePicPreview('');
+                onAdd(); // refresh list
+                toast.success('Contact added successfully!');
+        }
+        else{
+             toast.error('Server error while adding contact.');
+        }
+    }
+    catch(err){
+            console.error('Error adding contact:', err);
+            toast.error('Could not connect to the server.');
+    }
 
     return(
-        <div>
-            <Notification message={notification} type={notificationType}/>
-            <form onSubmit={handleSubmit} style={style.form.container}>
-            <label>First name:</label>
-            <br />
-            <input style={style.form.inputs} className="userFirstname" name="userFirstname" type="text" value={userState.userFirstname} onChange={handleUserChange} />
-            <br />
-            <label>Last name:</label>
-            <br />
-            <input style={style.form.inputs} className="userLastname" name="userLastname" type="text" value={userState.userLastname} onChange={handleUserChange} />
-            <br />
-            <label>Phone:</label>
-            <br />
-            <input style={style.form.inputs} className="userPhone" name="userPhone" type="text" value={userState.userPhone} onChange={handleUserChange} />
-            <br />
-            <input style={style.form.submitBtn} className="submitButton" type="submit" value="Add User" />
-            </form>
-        </div>
+       <form
+            onSubmit={handleSubmit}
+            className="space-y-4 mb-8 p-4 rounded-2xl shadow bg-white">
+
+            <h2 className="text-lg sm:text-xl font-semibold text-blue-600 mb-2">Add New Contact</h2>
+            <div className="flex flex-col sm:flex-row gap-6 sm:gap-8">
+                {/* Profile Pic Upload & Preview */}
+                <div className="flex flex-col items-center justify-center w-full sm:w-auto">
+                    <label className="block mb-1 font-semibold">Profile Picture</label>
+                    <input
+                        type="file"
+                        accept="image/*"
+                        onChange={async (e) => {
+                            const file = e.target.files[0];
+                            if (file) {
+                                if (file.size > 2 * 1024 * 1024) {
+                                    toast.error('File is too large (max 2MB).');
+                                    return;
+                                }
+                                if (!file.type.startsWith('image/')) {
+                                    toast.error('Only image files are allowed.');
+                                    return;
+                                }
+                                setProfilePicPreview(URL.createObjectURL(file));
+                                const formData = new FormData();
+                                formData.append('profilePic', file);
+                                const res = await fetch('http://localhost:3001/upload', {
+                                    method: 'POST',
+                                    body: formData,
+                                });
+                                const data = await res.json();
+                                setProfilePic(data.filename);
+                            }
+                        }}
+                        className="w-full"
+                    />
+                    <div className="mt-2 flex flex-col items-center">
+                        {profilePicPreview ? (
+                            <img src={profilePicPreview}
+                                alt="Profile Preview"
+                                className="w-20 h-20 rounded-full border shadow object-cover" />
+                        ) : (
+                            <span className="block text-xs text-gray-400">No picture selected</span>
+                        )}
+                    </div>
+                </div>
+                {/* Inputs */}
+                <div className="flex-1 space-y-2">
+                    <input
+                        className="w-full border p-2 rounded"
+                        type="text"
+                        placeholder="Name"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        required
+                    />
+                    <input
+                        className="w-full border p-2 rounded"
+                        type="email"
+                        placeholder="Email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        required
+                    />
+                    <input
+                        className="w-full border p-2 rounded"
+                        type="text"
+                        placeholder="Phone"
+                        value={phone}
+                        onChange={(e) => setPhone(e.target.value)}
+                        required
+                    />
+                    <input
+                        className="w-full border p-2 rounded"
+                        type="text"
+                        placeholder="Tags (comma separated: Family, Work)"
+                        value={tags}
+                        onChange={e => setTags(e.target.value)}
+                    />
+                    <button
+                        type="submit"
+                        className="bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 transition font-semibold mt-2 w-full sm:w-auto"
+                    >
+                        ➕ Add Contact
+                    </button>
+                </div>
+            </div>
+        </form>
     );
+}
 }
 export default PhoneBookForm
