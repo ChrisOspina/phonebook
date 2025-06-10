@@ -1,4 +1,4 @@
-import style from "./style";
+import style from "../style";
 function InformationTable(props){
   const sortedContacts = props.users.sort((a, b) => a.userLastname.localeCompare(b.userLastname));
 

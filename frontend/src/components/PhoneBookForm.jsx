@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import Notification from "./Notification";
-import style from "./style";
+import style from "../style";
 
 function PhoneBookForm(props){
 
