@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { toast } from 'react-toastify';
-import style from "../style";
 
 function PhoneBookForm({onAdd}){
 
@@ -134,7 +133,7 @@ function PhoneBookForm({onAdd}){
                         type="submit"
                         className="bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 transition font-semibold mt-2 w-full sm:w-auto"
                     >
-                        ➕ Add Contact
+                     Add Contact
                     </button>
                 </div>
             </div>
